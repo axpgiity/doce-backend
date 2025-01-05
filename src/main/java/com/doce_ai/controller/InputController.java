@@ -1,16 +1,12 @@
 package com.doce_ai.controller;
 
-import com.doce_ai.service.FileProcessorService;
+import com.doce_ai.constants.FileConstants;
 import com.doce_ai.service.GitHubService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,102 +15,72 @@ import java.util.Map;
 public class InputController {
 
     @Autowired
-    private FileProcessorService fileProcessorService;
-    @Autowired
     private GitHubService gitHubService;
 
     @PostMapping("/upload")
-    public Map<String, String> processInput(
+    public Map<String, Object> processInput(
             @RequestParam(required = false) String githubLink,
             @RequestParam(required = false) String localPath) {
 
-        Map<String, String> response = new HashMap<>();
-        ObjectMapper objectMapper=new ObjectMapper();
-
-        if (githubLink == null && localPath == null) {
-            response.put("status", "error");
-            response.put("message", "Please provide either a GitHub link or a local path.");
-            return response;
-        }
-
+        Map<String, Object> response = new HashMap<>();
         try {
+            // Validate input
+            if (githubLink == null && localPath == null) {
+                return errorResponse("Please provide either a GitHub link or a local path.");
+            }
+
             String repoPath = null;
             if (githubLink != null) {
                 if (!gitHubService.isValidURL(githubLink)) {
-                    response.put("status", "error");
-                    response.put("message", "Invalid GitHub URL.");
-                    return response;
+                    return errorResponse("Invalid GitHub URL.");
                 }
                 repoPath = gitHubService.cloneRepo(githubLink);
-                /*response.put("status", "success");
-                response.put("message", "Repository cloned successfully to: " + repoPath);
-                response.put("analysis",  objectMapper.writeValueAsString(runPythonScript(clonedRepoPath)));*/
             } else {
                 if (gitHubService.isValidLocalPath(localPath)) {
                     repoPath = localPath;
-                    /*response.put("status", "success");
-                    response.put("message", "Local repository found and ready for processing: " + repoPath);
-                    response.put("analysis", objectMapper.writeValueAsString(runPythonScript(repoPath)));*/
                 } else {
-                    response.put("status", "error");
-                    response.put("message", "Invalid local path or directory does not exist: " + localPath);
+                    return errorResponse("Invalid local path or directory does not exist: " + localPath);
                 }
             }
 
-            // Now, instead of making an HTTP call, directly call processRepository
-            return processRepositoryInternal(repoPath);
+            // Call the Python API to process the repository
+            String pythonApiUrl = FileConstants.SCRIPT_LINK; // Flask server endpoint
+            RestTemplate restTemplate = new RestTemplate();
 
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "An error occurred: " + e.getMessage());
-            return response;
-        }
-    }
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("directory_path", repoPath);
 
-    public Map<String,String> processRepositoryInternal(String repoPath) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            // Call the file processor service to handle the processing of the repo
-            String jsonResponse = fileProcessorService.processRepository(repoPath);
+            // Send a POST request to the Flask API
+            Map<String, Object> pythonResponse = restTemplate.postForObject(pythonApiUrl, requestBody, Map.class);
 
-            // Put the response in the map to match the expected return type
-            response.put("message", "Repository processed successfully.");
-            response.put("base_path", repoPath); // Adding the base path for clarity
-            response.put("status", "success");
-            response.put("data", jsonResponse);
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "An error occurred: " + e.getMessage());
-        }
-        return response;
-    }
+            // Prepare final response
+            response.put("repoPath", repoPath);
+            response.put("message", "Repository Processed Successfully!");
 
-
-
-    /*private HashMap<String, Object> runPythonScript(String directoryPath) throws IOException {
-        HashMap<String, Object>analysisResult = new HashMap<>();
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "python",
-                "C:\\My_Projects\\CoDoc_Application\\doce_scripts_py\\json_parser.py",
-                directoryPath);
-        processBuilder.redirectErrorStream(true);
-
-        Process process = processBuilder.start();
-        try(BufferedReader reader=new BufferedReader(new java.io.InputStreamReader(process.getInputStream()))){
-            StringBuilder output = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line.trim());
+            // Add data from Python API
+            if (pythonResponse != null && pythonResponse.containsKey("files")) {
+                response.put("data", pythonResponse.get("files"));
+            } else {
+                response.put("data", new ArrayList<>()); // Default to empty array if no files found
             }
-            analysisResult.put("status", "success");
-            analysisResult.put("message", "Analysis completed successfully");
-            analysisResult.put("result", output.toString());
+
+            return response;
+
         } catch (Exception e) {
-            analysisResult.put("status", "error");
-            analysisResult.put("message", e.getMessage());
+            return errorResponse("An error occurred: " + e.getMessage());
         }
+    }
 
-        return analysisResult;
-    }*/
-
+    /**
+     * Helper method to create an error response.
+     *
+     * @param message Error message
+     * @return Map containing error response
+     */
+    private Map<String, Object> errorResponse(String message) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", message);
+        return errorResponse;
+    }
 }

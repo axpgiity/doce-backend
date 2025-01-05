@@ -12,7 +12,7 @@ public class GitHubService {
 
     public String cloneRepo(String repoUrl) throws GitAPIException {
         String tempDir = System.getProperty("java.io.tmpdir"); // Temp directory
-        String uniqueRepoDir = tempDir + "cloned-repo-" + UUID.randomUUID();
+        String uniqueRepoDir = tempDir + "cloned-repo-" + UUID.randomUUID();//Change this to repo-name
 
         Git.cloneRepository()
                 .setURI(repoUrl)
