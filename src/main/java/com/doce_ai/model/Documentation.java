@@ -7,7 +7,7 @@ import java.util.Date;
 @Document(collection = "documentations")
 public class Documentation {
     @Id
-    private String id;
+    private String doc_id;
     private String repoPath;
     private Object documentationData;
     private Date createdDate;
@@ -20,10 +20,9 @@ public class Documentation {
         this.documentationData = documentationData;
         this.createdDate = new Date();
     }
-
     // Getters/Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() { return doc_id; }
+    public void setId(String doc_id) { this.doc_id = doc_id; }
 
     public String getRepoPath() { return repoPath; }
     public void setRepoPath(String repoPath) { this.repoPath = repoPath; }
