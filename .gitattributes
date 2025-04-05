@@ -1,18 +1,2 @@
-# Enforce LF for Java source files and configs
-*.java text eol=lf
-*.xml text eol=lf
-*.yml text eol=lf
-*.properties text eol=lf
-* text=auto eol=lf
-
-# Keep Windows batch files using CRLF
+/mvnw text eol=lf
 *.cmd text eol=crlf
-*.bat text eol=crlf
-
-# Keep shell scripts using LF (for Unix/Mac)
-*.sh text eol=lf
-
-# Ignore binary files (no line-ending conversions)
-*.png binary
-*.jpg binary
-*.jar binary

@@ -9,8 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")  // Apply CORS to all /api endpoints
-                //.allowedOrigins("http://localhost:4321","http://localhost:4322", "http://localhost:4323", "http://localhost:5000","http://localhost:8080")  // Allow frontend and Python script
-                .allowedOriginPatterns("http://localhost:*")
+                .allowedOrigins("http://localhost:4321","http://localhost:4322", "http://localhost:4323", "http://localhost:5000")  // Allow frontend and Python script
                 .allowedMethods("GET", "POST")  // Allow GET and POST methods
                 .allowCredentials(true)  // Allow cookies, if needed
                 .allowedHeaders("*");  // Allow all headers
