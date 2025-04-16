@@ -1,6 +1,7 @@
 package com.doce_ai.config;
 
-import com.doce_ai.model.Documentation;
+import com.doce_ai.model.Documents;
+import com.doce_ai.model.Documents;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +60,7 @@ public class MongoConfig {
     // Ensures optimal query performance for frequent operations
     @Bean
     public IndexOperations indexOperations(MongoTemplate mongoTemplate, MongoMappingContext mongoMappingContext) {
-        IndexOperations operations = mongoTemplate.indexOps(Documentation.class);
+        IndexOperations operations = mongoTemplate.indexOps(Documents.class);
         IndexResolver resolver = new MongoPersistentEntityIndexResolver(mongoMappingContext);
 
         // Create TTL index for automatic document expiration after 30 days

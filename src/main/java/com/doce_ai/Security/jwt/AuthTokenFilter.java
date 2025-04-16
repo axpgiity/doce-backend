@@ -33,17 +33,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            String username = null;
 
             // First extract username if token exists
+            String email = null;
             if (jwt != null) {
-                username = jwtUtils.getUserNameFromJwtToken(jwt);
+                email = jwtUtils.getEmailFromToken(jwt);
             }
 
             // Check if username exists and no authentication is already set
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // Load user details
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 // Validate token against user details
                 if (jwtUtils.validateJwtToken(jwt, userDetails)) {  // Modified to include userDetails
@@ -57,9 +57,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    logger.debug("Successfully set authentication for user: {}", username);
+                    logger.debug("Successfully set authentication for email: {}", email);
                 } else {
-                    logger.warn("Token validation failed for user: {}", username);
+                    logger.warn("Token validation failed for email: {}", email);
                 }
             }
         } catch (Exception e) {
@@ -77,4 +77,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
         return null;
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/");
+    }
+
 }

@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,8 @@ class AuthController {
     @Autowired
     JwtUtils jwtUtils; // Utility for generating JWT tokens
 
+
+
     /**
      * Authenticate user and return a JWT token if successful.
      * @param loginRequest The login request containing username and password.
@@ -48,27 +51,18 @@ class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         try {
-
-            // Validate username/email exists
-            //Optional<User> user = userRepository.findByUsernameOrEmail(loginRequest.getUsername());
-            //if (!user.isPresent()) {
-            //    return ResponseEntity.badRequest()
-            //            .body(new MessageResponse("Error: Username/Email not found!"));
-            //}
-
-            // Check if the email in the request matches the user's email (if provided)
-            //if (loginRequest.getbyEmail(userRepository.findByEmail()) != null &&
-            //        !loginRequest.getbyEmail().equals(user.get().getEmail())) {
-            //    return ResponseEntity.badRequest()
-            //            .body(new MessageResponse("Error: Email does not match!"));
-            //}
+            // Check if the user exists with BOTH username and email
+            User user = userRepository.findByUsernameAndEmail(  //changed!!!!!!!!!!
+                    loginRequest.getUsername(),
+                    loginRequest.getEmail()
+            ).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
             // Authenticate the user with the provided username and password
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                    new UsernamePasswordAuthenticationToken(user.getUsername(),
                             loginRequest.getPassword()));
 
-            // Set the authentication in the security context
+            // Set the current authentication status in the security context holder (stack).
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Generate JWT token based on the authentication
@@ -124,11 +118,11 @@ class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create a new user's account
-        User user = new User(signUpRequest.getUsername(),
-                encoder.encode(signUpRequest.getPassword()),// Encode the password
-                signUpRequest.getEmail());
-
+        // Create new user with hashed password
+        User user= new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(encoder.encode(signUpRequest.getPassword())); // Hash the password
         userRepository.save(user);
 
         // Return a success message upon successful registration

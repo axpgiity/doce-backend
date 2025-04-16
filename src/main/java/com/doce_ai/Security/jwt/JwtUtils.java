@@ -40,12 +40,18 @@ public class JwtUtils {
 
         // Build and return the JWT token
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername())) // Set the subject (username)
+                .setSubject((userPrincipal.getEmail())) // Set the subject (username)
                 .setIssuedAt(new Date()) // Set the issue date
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Set the expiration date
                 .signWith(key(), SignatureAlgorithm.HS256)
                 // Sign the token using the secret key and algorithm
                 .compact(); // Compact the JWT into a string
+    }
+
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key()).build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -100,6 +106,10 @@ public class JwtUtils {
         }
 
         return false; // Return false if validation fails
+    }
+
+    public String getUsernameFromToken(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
 }

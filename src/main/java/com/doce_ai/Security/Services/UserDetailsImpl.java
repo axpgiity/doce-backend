@@ -2,6 +2,7 @@ package com.doce_ai.Security.Services;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import com.doce_ai.model.User;
@@ -16,8 +17,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
+    private String id;
     private String username;
     private String email;
+   // private List<String> data;
 
     @JsonIgnore
     private String password;
@@ -29,7 +32,8 @@ public class UserDetailsImpl implements UserDetails {
      * @param email    The email of the user.
      * @param password The password of the user.
      */
-    public UserDetailsImpl(String username, String email, String password) {
+    public UserDetailsImpl(String id,String username, String email, String password) {
+        this.id=id;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -43,15 +47,22 @@ public class UserDetailsImpl implements UserDetails {
      */
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
+                user.getId(),
                 user.getUsername(),
-                user.getEmail(),
-                user.getPassword());
+                user.getPassword(),
+                user.getEmail()
+                );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Return an empty list if you don't have roles/authorities
         return Collections.emptyList();
+    }
+
+
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -97,4 +108,6 @@ public class UserDetailsImpl implements UserDetails {
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(username, user.username);
     }
+
+
 }
