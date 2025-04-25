@@ -122,6 +122,7 @@ public class WebSecurityConfig {
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/signin").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/upload").authenticated()
                         // Allow public access to auth endpoints
                         .requestMatchers("/api/test/**").permitAll()
