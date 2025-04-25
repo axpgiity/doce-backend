@@ -7,6 +7,7 @@ import org.slf4j.Logger; // Import Logger for logging errors and information
 import org.slf4j.LoggerFactory; // Import LoggerFactory for creating Logger instances
 import org.springframework.beans.factory.annotation.Value; // Import Value for dependency injection
 import org.springframework.security.core.Authentication; // Import Authentication for handling user authentication
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component; // Import Component for Spring component scanning
 import com.doce_ai.Security.Services.UserDetailsImpl; // Import custom user details implementation
@@ -38,9 +39,10 @@ public class JwtUtils {
         // Get the user details from the authentication object
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
+
         // Build and return the JWT token
         return Jwts.builder()
-                .setSubject((userPrincipal.getEmail())) // Set the subject (username)
+                .setSubject((userPrincipal.getEmail())) // Set the subject (email)
                 .setIssuedAt(new Date()) // Set the issue date
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Set the expiration date
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -84,16 +86,20 @@ public class JwtUtils {
      */
     public boolean validateJwtToken(String authToken, UserDetails userDetails) {
         try {
+            // Type casting the userDetails into the UserDetailsImpl class goal was to get the user validate
+            // using their email only .
+            UserDetailsImpl userDetailsImpl= (UserDetailsImpl) userDetails;
+
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key())
                     .build()
                     .parseClaimsJws(authToken)
                     .getBody(); // Extract claims from token
 
-            String usernameFromToken = claims.getSubject(); // Extract username from token
+            String emailFromToken = claims.getSubject(); // Extract email from token
 
             // Ensure token is valid AND belongs to the correct user
-            return usernameFromToken.equals(userDetails.getUsername());
+            return emailFromToken.equals(userDetailsImpl.getEmail());
 
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
@@ -104,12 +110,13 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
-
-        return false; // Return false if validation fails
+        // Return false if validation fails
+        return false;
     }
 
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-    }
+    // depricated method for getting the username from the token
+//    public String getUsernameFromToken(String token) {
+//        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+//    }
 
 }

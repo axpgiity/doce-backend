@@ -1,6 +1,8 @@
 package com.doce_ai.Security.jwt;
 
 import java.io.IOException;
+
+import com.doce_ai.Security.Services.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +36,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
 
-            // First extract username if token exists
+            // First extract email if token exists
             String email = null;
             if (jwt != null) {
                 email = jwtUtils.getEmailFromToken(jwt);
@@ -42,8 +44,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             // Check if username exists and no authentication is already set
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Load user details
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                // Load user details by theior username or email
+                UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(email);
 
                 // Validate token against user details
                 if (jwtUtils.validateJwtToken(jwt, userDetails)) {  // Modified to include userDetails

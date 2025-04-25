@@ -59,8 +59,11 @@ class AuthController {
 
             // Authenticate the user with the provided username and password
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(),
-                            loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
 
             // Set the current authentication status in the security context holder (stack).
             SecurityContextHolder.getContext().setAuthentication(authentication);

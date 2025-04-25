@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration; // Import for confi
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager; // Import for authentication manager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider; // Import for authentication provider
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration; // Import for authentication configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // Import for method security
 import org.springframework.security.config.annotation.web.builders.HttpSecurity; // Import for HTTP security configuration
