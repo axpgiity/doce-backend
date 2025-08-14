@@ -29,11 +29,23 @@ public interface DocumentRepository extends MongoRepository<Documents, String> {
     // Find documents updated after a certain date
     List<Documents> findByUpdatedAtAfter(Date date);
 
+    // New method to find by repository URL
+    List<Documents> findByRepositoryUrl(String repositoryUrl);
+
+    // Find by user ID and repository URL
+    Documents findByUserIdAndRepositoryUrl(String userId, String repositoryUrl);
+
+    // Find by repository URL containing keyword
+    List<Documents> findByRepositoryUrlContaining(String keyword);
+
     // Count documents by user ID
     long countByUserId(String userId);
 
     // Delete all documents by user ID
     void deleteByUserId(String userId);
+
+    //Find all
+    List<Documents> findAll();
 
     @Query("{'userId': ?0, 'createdAt': {$gt: ?1}}")
     List<Documents> findUserDocumentsCreatedAfter(String userId, Date date);

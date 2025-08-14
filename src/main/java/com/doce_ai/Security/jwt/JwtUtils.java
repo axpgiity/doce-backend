@@ -7,7 +7,6 @@ import org.slf4j.Logger; // Import Logger for logging errors and information
 import org.slf4j.LoggerFactory; // Import LoggerFactory for creating Logger instances
 import org.springframework.beans.factory.annotation.Value; // Import Value for dependency injection
 import org.springframework.security.core.Authentication; // Import Authentication for handling user authentication
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component; // Import Component for Spring component scanning
 import com.doce_ai.Security.Services.UserDetailsImpl; // Import custom user details implementation

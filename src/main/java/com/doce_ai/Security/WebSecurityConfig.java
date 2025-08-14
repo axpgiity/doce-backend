@@ -1,26 +1,23 @@
 package com.doce_ai.Security;
 
-import com.doce_ai.Repository.UserRepository;
-import com.doce_ai.Security.Services.UserDetailsImpl;
+
 import com.doce_ai.Security.jwt.AuthEntryPointJwt; // Import for unauthorized access handler
 import com.doce_ai.Security.jwt.AuthTokenFilter; // Import for JWT token filter
 import com.doce_ai.Security.Services.UserDetailsServiceImpl; // Import for user details service implementation
-import com.doce_ai.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired; // Import for dependency injection
 import org.springframework.context.annotation.Bean; // Import for Spring configuration
 import org.springframework.context.annotation.Configuration; // Import for configuration class
-import org.springframework.http.HttpMethod;
+
 import org.springframework.security.authentication.AuthenticationManager; // Import for authentication manager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider; // Import for authentication provider
-import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration; // Import for authentication configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // Import for method security
 import org.springframework.security.config.annotation.web.builders.HttpSecurity; // Import for HTTP security configuration
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer; // Import for HTTP security configuration
 import org.springframework.security.config.http.SessionCreationPolicy; // Import for session creation policies
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Import for password encoding
 import org.springframework.security.crypto.password.PasswordEncoder; // Import for password encoder interface
 import org.springframework.security.web.SecurityFilterChain; // Import for security filter chain
@@ -108,7 +105,7 @@ public class WebSecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Configure CSRF protection, exception handling, session management, and authorization
+        // Configure CSRF protection, exception hdling, session management, and authorization
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
                 .exceptionHandling(exception ->
@@ -123,6 +120,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/signin").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/users").permitAll()
                         .requestMatchers("/api/upload").authenticated()
                         // Allow public access to auth endpoints
                         .requestMatchers("/api/test/**").permitAll()

@@ -28,6 +28,7 @@ public class User {
     @Size(min = 6, max = 120,message = "Password must be between 6 and 120 characters")
     private String password;
 
+
     private List<String> documents = new ArrayList<>(); // Stores Document IDs
 
     public User(String username,String password,String email){

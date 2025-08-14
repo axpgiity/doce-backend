@@ -2,7 +2,6 @@ package com.doce_ai.Security.Services;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import com.doce_ai.model.User;
@@ -20,7 +19,6 @@ public class UserDetailsImpl implements UserDetails {
     private String id;
     private String username;
     private String email;
-   // private List<String> data;
 
     @JsonIgnore
     private String password;
