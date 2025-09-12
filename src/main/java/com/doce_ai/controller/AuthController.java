@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-//@CrossOrigin(origins = "*", maxAge = 3600) // Allow cross-origin requests for all origins
 @RestController // Indicate that this class is a REST controller
 @RequestMapping("/api/auth") // Base URL for authentication-related endpoints
 class AuthController {
@@ -94,7 +93,6 @@ class AuthController {
                         .badRequest()
                         .body(new MessageResponse("Error: Username or Email not found!"));
             }
-
         }
     }
 

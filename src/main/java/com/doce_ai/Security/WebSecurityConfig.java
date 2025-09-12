@@ -38,8 +38,7 @@ public class WebSecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler; // Injects the entry point for unauthorized requests
 
-//    @Autowired
-//    private UserRepository userRepository;
+
     /**
      * Creates a bean for the authentication JWT token filter.
      *
@@ -87,14 +86,6 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder(); // Returns a new instance of BCryptPasswordEncoder
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService()  {
-//        return email -> {
-//            User user = userRepository.findByEmail(email)
-//                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//            return UserDetailsImpl.build(user);
-//        };
-//    }
 
     /**
      * Configures the security filter chain for HTTP requests.

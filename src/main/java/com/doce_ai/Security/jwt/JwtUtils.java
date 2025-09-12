@@ -112,10 +112,4 @@ public class JwtUtils {
         // Return false if validation fails
         return false;
     }
-
-    // depricated method for getting the username from the token
-//    public String getUsernameFromToken(String token) {
-//        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-//    }
-
 }

@@ -49,8 +49,10 @@ public class InputController {
         Documents savedDoc = null;
         try {
 
+
             // Validate input
-            String githubLink = requestBody.get("githubRepoLink");
+            //String githubLink = requestBody.get("githubRepoLink");
+            String githubLink = requestBody.get("directory_path");
 
             if (githubLink == null || githubLink.isBlank()) {
                 return errorResponse("GitHub repository URL is required");
